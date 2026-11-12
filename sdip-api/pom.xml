@@ -80,6 +80,20 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <!-- Demo fixtures live at the repo root so `docker compose` and the
+                 seeder use the exact same bytes the README points at. -->
+            <resource>
+                <directory>${project.basedir}/../demo</directory>
+                <targetPath>demo</targetPath>
+                <includes>
+                    <include>*.csv</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

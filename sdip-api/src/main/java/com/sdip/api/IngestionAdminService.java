@@ -55,28 +55,50 @@ public class IngestionAdminService {
      */
     public UUID uploadAndLaunch(MultipartFile file, String profileName, UUID requestedSquadId,
                                 String actorEmail, String actorRole) {
+        UUID squadId = resolveSquad(requestedSquadId);
+        Path staged = stage(file);
+        launcher.profileEntityType(profileName); // validates profile existence
+        return launcher.launchAsync(staged, profileName, squadId, actorEmail, actorRole);
+    }
+
+    /**
+     * Synchronous variant used by the demo seeder: rows are committed before
+     * startup finishes, so the dashboard is populated on the very first
+     * request. The HTTP upload path stays asynchronous.
+     */
+    public UUID ingestSync(MultipartFile file, String profileName, UUID requestedSquadId,
+                           String actorEmail, String actorRole) {
+        UUID squadId = resolveSquad(requestedSquadId);
+        Path staged = stage(file);
+        launcher.profileEntityType(profileName); // validates profile existence
+        return launcher.launchSync(staged, profileName, squadId, actorEmail, actorRole);
+    }
+
+    private UUID resolveSquad(UUID requestedSquadId) {
         UUID restriction = scope.restriction();
         UUID squadId = restriction != null ? restriction : requestedSquadId;
         if (squadId == null) {
             throw new IllegalArgumentException("squadId is required");
         }
+        return squadId;
+    }
+
+    private Path stage(MultipartFile file) {
         if (file.isEmpty()) {
             throw new IllegalArgumentException("empty upload");
         }
         String original = file.getOriginalFilename() != null ? file.getOriginalFilename() : "upload";
         String safe = original.replaceAll("[^A-Za-z0-9._-]", "_");
-        Path staged;
         try {
             Files.createDirectories(uploadDir);
-            staged = uploadDir.resolve(UUID.randomUUID() + "-" + safe);
+            Path staged = uploadDir.resolve(UUID.randomUUID() + "-" + safe);
             try (InputStream in = file.getInputStream()) {
                 Files.copy(in, staged);
             }
+            return staged;
         } catch (IOException e) {
             throw new IllegalStateException("could not stage upload: " + e.getMessage(), e);
         }
-        EntityType type = launcher.profileEntityType(profileName); // validates profile existence
-        return launcher.launchAsync(staged, profileName, squadId, actorEmail, actorRole);
     }
 
     @Transactional(readOnly = true)
