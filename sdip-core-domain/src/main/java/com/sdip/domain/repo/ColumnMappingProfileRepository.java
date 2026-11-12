@@ -1,0 +1,12 @@
+package com.sdip.domain.repo;
+
+import com.sdip.domain.entity.ColumnMappingProfile;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+import java.util.UUID;
+
+public interface ColumnMappingProfileRepository extends JpaRepository<ColumnMappingProfile, UUID> {
+
+    Optional<ColumnMappingProfile> findByName(String name);
+}

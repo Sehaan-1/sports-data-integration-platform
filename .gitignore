@@ -1,0 +1,118 @@
+# ---------------------------------------------------------------------------
+# Build output — Maven / Gradle / generic
+# ---------------------------------------------------------------------------
+target/
+build/
+dist/
+out/
+*.class
+*.war
+*.ear
+*.nar
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# Maven release/flatten plugin scratch files
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.flattened-pom.xml
+.mvn/timing.properties
+
+# Test / coverage artifacts
+*.exec
+jacoco.exec
+*.jfr
+
+# ---------------------------------------------------------------------------
+# JVM crash & heap dumps
+# ---------------------------------------------------------------------------
+hs_err_pid*
+replay_pid*
+*.hprof
+*.heapdump
+
+# ---------------------------------------------------------------------------
+# Local databases (H2 file mode, SQLite, etc.)
+# ---------------------------------------------------------------------------
+*.mv.db
+*.trace.db
+*.lock.db
+*.db
+
+# ---------------------------------------------------------------------------
+# Runtime data — never commit what the app writes at runtime
+# ---------------------------------------------------------------------------
+data/
+demo-data/
+uploads/
+logs/
+tmp/
+.cache/
+spring-shell.log
+*.log
+
+# ---------------------------------------------------------------------------
+# Secrets & machine-local configuration
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+secrets/
+application-local.yml
+application-local.yaml
+application-local.properties
+
+# ---------------------------------------------------------------------------
+# IDEs & editors
+# ---------------------------------------------------------------------------
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+.apt_generated/
+.sts4-cache/
+.metadata/
+*.swp
+*.swo
+*~
+
+# ---------------------------------------------------------------------------
+# OS noise
+# ---------------------------------------------------------------------------
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ---------------------------------------------------------------------------
+# Local toolchain / JDK cache directories
+# ---------------------------------------------------------------------------
+.java/
+
+# ---------------------------------------------------------------------------
+# Temporary junk
+# ---------------------------------------------------------------------------
+*.tmp
+*.bak
+*.orig
+*.rej

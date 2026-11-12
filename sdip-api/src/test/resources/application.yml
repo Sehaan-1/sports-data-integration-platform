@@ -1,0 +1,37 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:sdip-api-test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
+  threads:
+    virtual:
+      enabled: false   # MockMvc + SecurityContext on virtual threads complicates @WithSecurityContext
+
+sdip:
+  seed:
+    default-users: true
+  linking:
+    tau-high: 0.90
+    tau-low: 0.68
+  ingestion:
+    upload-dir: ${java.io.tmpdir}/sdip-test-uploads
+    seed-default-profiles: true
+  connectors:
+    scheduling-enabled: false
+
+logging:
+  level:
+    com.sdip: info

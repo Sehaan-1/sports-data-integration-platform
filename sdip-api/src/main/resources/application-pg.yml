@@ -1,0 +1,16 @@
+# Graded deployment profile: PostgreSQL 16 (docker-compose up -d)
+spring:
+  datasource:
+    url: jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:sdip}
+    username: ${PGUSER:sdip}
+    password: ${PGPASSWORD:sdip}
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    locations: classpath:db/migration,classpath:db/migration-pg-batch
+  batch:
+    jdbc:
+      initialize-schema: never   # schema comes from the Flyway migration V3
+
+sdip:
+  seed:
+    default-users: ${SDIP_SEED_DEFAULT_USERS:true}

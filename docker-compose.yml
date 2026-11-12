@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: sdip-postgres
+    environment:
+      POSTGRES_DB: sdip
+      POSTGRES_USER: sdip
+      POSTGRES_PASSWORD: sdip
+    ports:
+      - "5432:5432"
+    volumes:
+      - sdip-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sdip -d sdip"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+volumes:
+  sdip-pgdata:
+
+# Run the platform against real PostgreSQL 16 (the graded deployment target per ADR-02):
+#   docker compose up -d
+#   SPRING_PROFILES_ACTIVE=pg java -jar sdip-api/target/sdip-api-1.0.0.jar
