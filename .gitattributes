@@ -1,0 +1,22 @@
+# Normalize everything to LF in the repository, then opt specific files out.
+* text=auto
+
+# Shell scripts and the POSIX wrapper must be LF even on Windows checkouts.
+*.sh text eol=lf
+mvnw text eol=lf
+
+# Windows batch files must stay CRLF.
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Demo fixtures are parsed byte-for-byte by the ingestion pipeline.
+*.csv text eol=lf
+
+# Binary assets must never be line-ending converted.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.jar binary
+*.zip binary
