@@ -97,8 +97,7 @@ human-readable message naming JDK 21 as required — silence is not acceptable.
 assume bash.
 
 **D5 — GitHub is assumed** for CI (`ubuntu-latest`, Temurin 21, `./mvnw verify`).
-If the repo will not be pushed to GitHub, P1's CI step degrades to a local
-`verify.ps1`/`verify.sh` pair. This is the one assumption the owner should confirm.
+**Confirmed by the owner: this repository goes to GitHub.**
 
 **D6 — Nothing existing breaks.** All 36 tests keep passing. Any test changed for
 portability is changed for portability only.
@@ -201,7 +200,6 @@ clone; a reader who clones succeeds without reading `docs/`.
 - Whether demo seeding becomes a startup flag or stays a script (prefer flag).
 - Whether `health` is public or authenticated.
 - File/dir names inside `docs/`.
-- LICENSE choice, if the owner has no preference.
 
 ## 11. Out of scope (recorded so it is not re-litigated)
 
