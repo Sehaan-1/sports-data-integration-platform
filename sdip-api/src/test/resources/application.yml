@@ -20,6 +20,16 @@ spring:
     virtual:
       enabled: false   # MockMvc + SecurityContext on virtual threads complicates @WithSecurityContext
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
 sdip:
   seed:
     default-users: true
