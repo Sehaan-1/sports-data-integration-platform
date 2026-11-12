@@ -14,3 +14,4 @@ spring:
 sdip:
   seed:
     default-users: ${SDIP_SEED_DEFAULT_USERS:true}
+    demo-data: ${SDIP_SEED_DEMO_DATA:false}

@@ -66,8 +66,8 @@ sdip:
     upload-dir: ${java.io.tmpdir}/sdip-uploads
     seed-default-profiles: true
   security:
-    jwt-secret-b64: ""           # SDIP_JWT_SECRET_B64 in real deployments
-    credential-key-b64: ""       # falls back to documented dev key when blank
+    jwt-secret-b64: ${SDIP_JWT_SECRET_B64:}           # base64, >=32 bytes; dev fallback when blank
+    credential-key-b64: ${SDIP_CREDENTIAL_KEY_B64:}   # base64, 32 bytes; dev fallback when blank
     cors-allowed-origins: ""
   connectors:
     scheduling-enabled: false

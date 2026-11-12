@@ -1,0 +1,23 @@
+.git
+.gitignore
+.gitattributes
+.idea
+.vscode
+.env
+.env.*
+!.env.example
+
+# Build output — rebuilt inside the image
+target/
+**/target/
+
+# Docs assets are large and irrelevant to the build
+docs/images/
+docs/handoffs/
+
+# Local noise
+*.log
+**/*.log
+logs/
+uploads/
+data/
