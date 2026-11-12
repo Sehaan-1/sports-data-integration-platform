@@ -12,6 +12,15 @@
     <name>SDIP :: API</name>
     <description>REST API, OpenAPI docs, dashboard endpoints, application assembly</description>
 
+    <properties>
+        <!-- PostgreSQL tests need Docker. They stay excluded from the default
+             build; CI makes the tag mandatory instead of relying on Docker
+             auto-detection by running with -Dgroups=pg -DexcludedGroups=.
+             The CLI override works because this is a project property that
+             feeds surefire's own `${excludedGroups}` parameter. -->
+        <excludedGroups>pg</excludedGroups>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.sdip</groupId>
@@ -75,6 +84,22 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- @ServiceConnection lives here; required by PostgresIntegrationTest. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
