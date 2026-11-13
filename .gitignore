@@ -116,3 +116,12 @@ $RECYCLE.BIN/
 *.bak
 *.orig
 *.rej
+
+# ---------------------------------------------------------------------------
+# Internal session artifacts — handoffs, agent plans, scratch notes
+# ---------------------------------------------------------------------------
+docs/handoffs/
+docs/superpowers/
+docs/plans/
+docs/sessions/
+*.handoff.md
