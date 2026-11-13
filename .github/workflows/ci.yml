@@ -26,7 +26,7 @@ jobs:
         run: ./mvnw -B verify
 
       - name: PostgreSQL integration tests
-        run: ./mvnw -B -pl sdip-api test -Dgroups=pg -DexcludedGroups=
+        run: ./mvnw -B -pl sdip-api -am test -Dgroups=pg -DexcludedGroups=
         env:
           CI: true
 
