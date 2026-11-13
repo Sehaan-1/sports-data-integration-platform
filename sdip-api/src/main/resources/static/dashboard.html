@@ -143,7 +143,7 @@ function showTab(name){
 }
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function tbl(rows,cols){if(!rows.length)return'<p class="mut">No data yet — upload a file or run a connector sync.</p>';
-  return'<table><tr>'+cols.map(c=>`<th>${c[0]}</th>`).join('')+'</tr>'+rows.map(r=>'<tr>'+cols.map(c=>`<td>${esc(c[1](r))}</td>`).join('')+'</tr>').join('')+'</table>'}
+  return'<table><tr>'+cols.map(c=>`<th>${c[0]}</th>`).join('')+'</tr>'+rows.map(r=>'<tr>'+cols.map(c=>`<td>${c[1](r)}</td>`).join('')+'</tr>').join('')+'</table>'}
 const fmt=(n,d=0)=>(n==null?'—':Number(n).toLocaleString(undefined,{maximumFractionDigits:d}));
 
 function bars(el,rows,label,value,color){
