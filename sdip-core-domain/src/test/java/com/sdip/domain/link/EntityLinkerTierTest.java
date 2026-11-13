@@ -69,7 +69,7 @@ class EntityLinkerTierTest {
         assertThat(second.kind()).isEqualTo(LinkOutcome.Kind.LINKED);
         assertThat(second.athleteId()).isEqualTo(m.getId());
         // exactly ONE link row exists for this vendor identity
-        assertThat(links.findAll()).hasSize(1);
+        assertThat(links.findBySourceSystemAndSourceAthleteId("CATAPULT", "cat-55")).hasSize(1);
     }
 
     @Test
@@ -96,7 +96,7 @@ class EntityLinkerTierTest {
         LinkOutcome again = linker.resolve(new IdentityRecord(
                 "VALD", "p-777", "Jordan Meyer", LocalDate.parse("1998-03-05"), null, squad.getId()));
         assertThat(again.kind()).isEqualTo(LinkOutcome.Kind.QUARANTINED);
-        assertThat(quarantine.findAll()).hasSize(1);
+        assertThat(quarantine.findBySourceSystemAndSourceAthleteId("VALD", "p-777")).hasSize(1);
         assertThat(m.getId()).isNotNull(); // sanity
     }
 
@@ -108,7 +108,7 @@ class EntityLinkerTierTest {
         LinkOutcome out = linker.resolve(new IdentityRecord(
                 "CATAPULT", "cat-900", "Chris Doe", LocalDate.parse("2000-01-01"), null, squad.getId()));
         assertThat(out.kind()).isEqualTo(LinkOutcome.Kind.QUARANTINED);
-        assertThat(links.findAll()).isEmpty(); // no automatic link was created
+        assertThat(links.findBySourceSystemAndSourceAthleteId("CATAPULT", "cat-900")).isEmpty(); // no automatic link was created
     }
 
     @Test

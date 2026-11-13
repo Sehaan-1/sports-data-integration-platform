@@ -13,5 +13,8 @@ public interface AthleteSourceLinkRepository extends JpaRepository<AthleteSource
     Optional<AthleteSourceLink> findBySourceSystemAndSourceAthleteIdAndStatus(
             String sourceSystem, String sourceAthleteId, LinkStatus status);
 
+    List<AthleteSourceLink> findBySourceSystemAndSourceAthleteId(
+            String sourceSystem, String sourceAthleteId);
+
     List<AthleteSourceLink> findByAthleteIdAndStatus(UUID athleteId, LinkStatus status);
 }
