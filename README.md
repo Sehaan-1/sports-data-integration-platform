@@ -1,5 +1,7 @@
 # SDIP — Sports Data Integration Platform
 
+![CI](https://github.com/Sehaan-1/sports-data-integration-platform/actions/workflows/ci.yml/badge.svg)
+
 A modular-monolith integration platform that ingests athlete monitoring data
 from **Catapult** (GPS microtechnology) and **VALD** (ForceDecks strength
 testing), resolves cross-vendor athlete identities safely, and serves unified
