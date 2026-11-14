@@ -1,0 +1,20 @@
+{
+  "name": "sdip-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Development preview and browser checks for SDIP's dependency-free frontend.",
+  "scripts": {
+    "preview": "node scripts/preview.mjs",
+    "test:frontend": "node --test scripts/frontend.test.mjs",
+    "test:browser": "node scripts/browser-check.mjs"
+  },
+  "devDependencies": {
+    "@sparticuz/chromium": "153.0.0",
+    "axe-core": "4.11.0",
+    "playwright-core": "1.65.1"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

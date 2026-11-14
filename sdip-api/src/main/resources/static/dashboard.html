@@ -1,228 +1,502 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>SDIP — Sports Data Integration Platform</title>
-<style>
-  :root{--bg:#0f1420;--panel:#1a2233;--panel2:#22304a;--ink:#e8edf7;--mut:#8fa0bd;--acc:#4da3ff;--ok:#3ddc97;--warn:#ffb648;--bad:#ff6b6b;--line:#2c3a56}
-  *{box-sizing:border-box} body{margin:0;font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--ink)}
-  header{display:flex;align-items:center;gap:14px;padding:14px 22px;background:var(--panel);border-bottom:1px solid var(--line)}
-  header h1{font-size:18px;margin:0;letter-spacing:.4px} header .tag{font-size:11px;color:var(--mut);border:1px solid var(--line);border-radius:10px;padding:2px 8px}
-  header .spacer{flex:1} header .who{font-size:12px;color:var(--mut)}
-  button{background:var(--acc);border:0;color:#06121f;font-weight:600;border-radius:8px;padding:8px 14px;cursor:pointer}
-  button.ghost{background:transparent;color:var(--acc);border:1px solid var(--acc)} button:hover{filter:brightness(1.12)}
-  main{padding:22px;max-width:1100px;margin:0 auto}
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:18px}
-  .card h2{margin:0 0 12px;font-size:15px;color:var(--mut);text-transform:uppercase;letter-spacing:1px}
-  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-  input,select{background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:8px 10px;font-size:13px}
-  nav{display:flex;gap:6px;margin-bottom:18px;flex-wrap:wrap}
-  nav button{background:var(--panel2);color:var(--mut);border:1px solid var(--line)} nav button.on{background:var(--acc);color:#06121f}
-  table{width:100%;border-collapse:collapse;font-size:13px} th{color:var(--mut);text-align:left;font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line)}
-  td{padding:6px 8px;border-bottom:1px solid #223050} tr:hover td{background:#1e2942}
-  .pill{font-size:11px;border-radius:9px;padding:2px 8px} .p-ok{background:#12382b;color:var(--ok)} .p-warn{background:#3d3013;color:var(--warn)} .p-bad{background:#3d1a1a;color:var(--bad)}
-  .mut{color:var(--mut);font-size:12px} .err{color:var(--bad);font-size:13px;white-space:pre-wrap}
-  #login{max-width:380px;margin:9vh auto} #login input{width:100%;margin-bottom:10px}
-  svg{width:100%;height:auto;display:block} .hidden{display:none!important}
-  a{color:var(--acc)}
-</style>
-</head>
-<body>
-<header>
-  <h1>SDIP</h1><span class="tag">Sports Data Integration Platform</span><span class="tag">Catapult · VALD</span>
-  <div class="spacer"></div><span class="who" id="who"></span><button class="ghost hidden" id="logoutBtn" onclick="logout()">Sign out</button>
-</header>
-<main>
-  <section id="login" class="card">
-    <h2>Sign in</h2>
-    <input id="email" placeholder="email" value="coach@sdip.local">
-    <input id="password" type="password" placeholder="password" value="Coach#123">
-    <button onclick="login()">Sign in</button>
-    <p class="mut">Demo users — admin@sdip.local/Admin#123 · coach@sdip.local/Coach#123 · physio@sdip.local/Physio#123 · analyst@sdip.local/Analyst#123</p>
-    <p class="err" id="loginErr"></p>
-  </section>
+<!doctype html>
+<html lang="en" data-type="software" data-motion="on">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="SDIP brings Catapult GPS and VALD strength data into one squad-scoped performance workspace."
+    />
+    <meta name="theme-color" content="#f8f9fb" />
+    <meta name="page-type" content="software" />
+    <meta name="site-kind" content="software" />
+    <meta property="og:title" content="SDIP — Your performance workspace" />
+    <meta
+      property="og:description"
+      content="A complete view of your team's training data, from GPS load to ForceDecks testing."
+    />
+    <meta property="og:type" content="website" />
+    <title>Overview · SDIP</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
+    <link
+      rel="preload"
+      href="/assets/fonts/manrope-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="/assets/styles.css" />
+    <script type="module" src="/assets/app.js"></script>
+  </head>
+  <body>
+    <!-- Application, not a marketing page: the taste-skill system is adapted to a persistent
+       workspace, compact data typography, quiet motion, and accessible, working controls. -->
+    <a class="skip-link" href="#main-content">Skip to main content</a>
 
-  <section id="app" class="hidden">
-    <nav id="tabs">
-      <button data-t="team" class="on" onclick="showTab('team')">Team load</button>
-      <button data-t="athlete" onclick="showTab('athlete')">Athlete ACWR</button>
-      <button data-t="fatigue" onclick="showTab('fatigue')">Fatigue overlay</button>
-      <button data-t="upload" data-roles="ADMIN,HEAD_COACH,PRACTITIONER" onclick="showTab('upload')">Upload</button>
-      <button data-t="batches" onclick="showTab('batches')">Batches</button>
-      <button data-t="quarantine" data-roles="ADMIN" onclick="showTab('quarantine')">Quarantine</button>
-    </nav>
-
-    <div id="tab-team" class="card">
-      <h2>Team load — last 42 days</h2>
-      <div class="row"><select id="daysTeam"><option value="21">21 days</option><option value="42" selected>42 days</option><option value="90">90 days</option></select>
-      <button class="ghost" onclick="loadTeam()">Refresh</button></div>
-      <div id="teamChart"></div><div id="teamTbl"></div>
+    <div id="boot-screen" class="boot-screen" aria-label="Loading SDIP">
+      <span class="brand-mark" aria-hidden="true"
+        ><svg viewBox="0 0 32 32">
+          <path
+            d="M9 8h15l-4 5H5zm3 8h15l-4 5H8zm-4 8h12l-4 4H5z"
+            fill="currentColor"
+          /></svg
+      ></span>
+      <span>Opening your workspace…</span>
     </div>
 
-    <div id="tab-athlete" class="card hidden">
-      <h2>Athlete load &amp; ACWR</h2>
-      <div class="row"><select id="athleteSel"></select><button class="ghost" onclick="loadAthlete()">Refresh</button></div>
-      <div id="athChart"></div><div id="athTbl"></div>
-    </div>
-
-    <div id="tab-fatigue" class="card hidden">
-      <h2>GPS load × neuromuscular fatigue (VALD ForceDecks)</h2>
-      <div class="row"><select id="athleteSel2"></select><button class="ghost" onclick="loadFatigue()">Refresh</button></div>
-      <div id="fatChart"></div><div id="fatTbl"></div>
-    </div>
-
-    <div id="tab-upload" class="card hidden">
-      <h2>Ingest CSV / XLSX</h2>
-      <div class="row">
-        <select id="profileSel"></select>
-        <input type="file" id="fileInput" accept=".csv,.xlsx">
-        <button onclick="upload()">Upload &amp; ingest</button>
+    <section
+      id="login-screen"
+      class="login-screen"
+      hidden
+      aria-label="Sign in to SDIP"
+    >
+      <div class="login-story">
+        <a
+          class="brand login-brand"
+          href="/dashboard.html"
+          aria-label="SDIP home"
+        >
+          <span class="brand-mark" aria-hidden="true"
+            ><svg viewBox="0 0 32 32">
+              <path
+                d="M9 8h15l-4 5H5zm3 8h15l-4 5H8zm-4 8h12l-4 4H5z"
+                fill="currentColor"
+              /></svg
+          ></span>
+          <span class="brand-word">SDIP<span>PERFORMANCE PLATFORM</span></span>
+        </a>
+        <div class="login-story-copy">
+          <span class="eyebrow">THE WHOLE ATHLETE. IN VIEW.</span>
+          <h1>Your team’s data.<br /><span>A clearer picture.</span></h1>
+          <p>
+            Bring training load and strength testing together in one performance
+            workspace.
+          </p>
+        </div>
+        <div class="login-visual" aria-hidden="true">
+          <svg class="track-lines" viewBox="0 0 680 400" fill="none">
+            <rect x="95" y="60" width="650" height="280" rx="140" />
+            <rect x="120" y="85" width="600" height="230" rx="115" />
+            <rect x="145" y="110" width="550" height="180" rx="90" />
+            <rect x="170" y="135" width="500" height="130" rx="65" />
+            <path d="M425 60v280M450 60v280M475 60v280" />
+          </svg>
+          <div class="login-mini-card mini-load">
+            <span class="mini-icon"
+              ><svg class="icon">
+                <use href="/assets/icons.svg#activity" /></svg></span
+            ><span>Training load<strong>Every session, connected.</strong></span
+            ><span class="mini-check">✓</span>
+          </div>
+          <div class="login-mini-card mini-force">
+            <span class="mini-icon"
+              ><svg class="icon">
+                <use href="/assets/icons.svg#zap" /></svg></span
+            ><span
+              >Strength &amp; power<strong
+                >More context. Better decisions.</strong
+              ></span
+            ><span class="mini-check">✓</span>
+          </div>
+        </div>
+        <div class="login-story-footer">
+          <span>CATAPULT <span class="footer-plus">+</span> VALD</span
+          ><span>Two sources. One athlete profile.</span>
+        </div>
       </div>
-      <p class="mut">Staff roles only; squad-bound users always ingest into their own squad. Corrupt rows are quarantined (never halt the file).</p>
-      <p id="uploadMsg"></p>
+      <div class="login-form-side">
+        <div class="login-form-wrap">
+          <span class="section-kicker">WELCOME TO SDIP</span>
+          <h2>Back to your team.</h2>
+          <p class="login-lede">Sign in to your performance workspace.</p>
+          <form id="login-form">
+            <div class="field">
+              <label for="login-email">Email address</label
+              ><input
+                id="login-email"
+                name="email"
+                type="email"
+                autocomplete="username"
+                placeholder="you@yourteam.com"
+                value="coach@sdip.local"
+                required
+              />
+            </div>
+            <div class="field">
+              <label for="login-password">Password</label>
+              <div class="password-field">
+                <input
+                  id="login-password"
+                  name="password"
+                  type="password"
+                  autocomplete="current-password"
+                  placeholder="Enter your password"
+                  required
+                /><button
+                  type="button"
+                  class="icon-button"
+                  id="toggle-password"
+                  aria-label="Show password"
+                >
+                  <svg class="icon"><use href="/assets/icons.svg#eye" /></svg>
+                </button>
+              </div>
+            </div>
+            <p id="login-error" class="field-error" role="alert" hidden></p>
+            <button class="button primary login-submit" type="submit">
+              Sign in to workspace<svg class="icon">
+                <use href="/assets/icons.svg#arrow-right" />
+              </svg>
+            </button>
+          </form>
+          <details class="demo-credentials">
+            <summary>
+              Use a seeded demo account<svg class="icon">
+                <use href="/assets/icons.svg#chevron-down" />
+              </svg>
+            </summary>
+            <div class="demo-account-list">
+              <button type="button" data-demo-account="coach">
+                Head coach<span>A Team</span></button
+              ><button type="button" data-demo-account="admin">
+                Administrator<span>All squads</span></button
+              ><button type="button" data-demo-account="physio">
+                Practitioner<span>A Team</span></button
+              ><button type="button" data-demo-account="analyst">
+                Analyst<span>B Team · read only</span>
+              </button>
+            </div>
+          </details>
+          <div class="login-divider"><span>just looking around?</span></div>
+          <button
+            id="explore-demo"
+            class="button secondary demo-explore"
+            type="button"
+          >
+            <svg class="icon">
+              <use href="/assets/icons.svg#layout-dashboard" /></svg
+            >Explore demo workspace<svg class="icon">
+              <use href="/assets/icons.svg#arrow-up-right" />
+            </svg>
+          </button>
+          <p class="login-note">No account needed. Explore with sample data.</p>
+          <p class="login-security">
+            <svg class="icon"><use href="/assets/icons.svg#shield-check" /></svg
+            >Role-based access. Squad-scoped data.
+          </p>
+        </div>
+        <span class="login-copyright"
+          >SDIP · Sports Data Integration Platform</span
+        >
+      </div>
+    </section>
+
+    <div id="workspace" class="workspace" hidden>
+      <button
+        id="nav-scrim"
+        class="nav-scrim"
+        aria-label="Close navigation"
+        tabindex="-1"
+      ></button>
+      <aside class="sidebar" id="sidebar" aria-label="Workspace navigation">
+        <a class="brand" href="#/overview" aria-label="SDIP overview">
+          <span class="brand-mark" aria-hidden="true"
+            ><svg viewBox="0 0 32 32">
+              <path
+                d="M9 8h15l-4 5H5zm3 8h15l-4 5H8zm-4 8h12l-4 4H5z"
+                fill="currentColor"
+              /></svg
+          ></span>
+          <span class="brand-word">SDIP<span>PERFORMANCE PLATFORM</span></span>
+        </a>
+        <button
+          id="workspace-switcher"
+          class="workspace-switcher"
+          type="button"
+        >
+          <span class="workspace-monogram">S<span></span></span
+          ><span class="workspace-name"
+            >SDIP workspace<small id="workspace-mode"
+              >Performance staff</small
+            ></span
+          ><svg class="icon small">
+            <use href="/assets/icons.svg#chevron-down" />
+          </svg>
+        </button>
+        <nav class="main-nav" aria-label="Main navigation">
+          <p class="nav-label">WORKSPACE</p>
+          <a class="nav-item" href="#/overview" data-route="overview"
+            ><svg class="icon">
+              <use href="/assets/icons.svg#layout-dashboard" /></svg
+            ><span>Overview</span></a
+          >
+          <a class="nav-item" href="#/athletes" data-route="athletes"
+            ><svg class="icon"><use href="/assets/icons.svg#users" /></svg
+            ><span>Athletes</span></a
+          >
+          <a class="nav-item" href="#/fatigue" data-route="fatigue"
+            ><svg class="icon"><use href="/assets/icons.svg#heart-pulse" /></svg
+            ><span>Fatigue analysis</span></a
+          >
+          <p class="nav-label integration-label">DATA MANAGEMENT</p>
+          <a
+            class="nav-item"
+            href="#/sources"
+            data-route="sources"
+            data-roles="ADMIN"
+            ><svg class="icon"><use href="/assets/icons.svg#database" /></svg
+            ><span>Data sources</span
+            ><span class="nav-count neutral">2</span></a
+          >
+          <a class="nav-item" href="#/history" data-route="history"
+            ><svg class="icon"><use href="/assets/icons.svg#file-clock" /></svg
+            ><span>Import history</span></a
+          >
+          <a
+            class="nav-item"
+            href="#/review"
+            data-route="review"
+            data-roles="ADMIN"
+            ><svg class="icon"><use href="/assets/icons.svg#link-2" /></svg
+            ><span>Identity review</span
+            ><span id="review-count" class="nav-count" hidden>0</span></a
+          >
+        </nav>
+        <div class="sidebar-bottom">
+          <div class="sidebar-note">
+            <span class="sidebar-note-icon"
+              ><svg class="icon">
+                <use href="/assets/icons.svg#layers" /></svg></span
+            ><strong>Better together.</strong>
+            <p>GPS and strength data.<br />One complete athlete view.</p>
+            <button id="sidebar-sources" class="text-button" type="button">
+              Explore your data<svg class="icon small">
+                <use href="/assets/icons.svg#arrow-up-right" />
+              </svg>
+            </button>
+          </div>
+          <button class="nav-item help-button" id="help-button" type="button">
+            <svg class="icon"><use href="/assets/icons.svg#circle-help" /></svg
+            ><span>Help &amp; documentation</span
+            ><svg class="icon small">
+              <use href="/assets/icons.svg#arrow-up-right" />
+            </svg>
+          </button>
+          <div class="account-wrap">
+            <button
+              id="account-button"
+              class="account-button"
+              type="button"
+              aria-expanded="false"
+              aria-controls="account-menu"
+            >
+              <span class="avatar account-avatar" id="account-initials">DA</span
+              ><span class="account-copy"
+                ><strong id="account-name">Demo administrator</strong
+                ><small id="account-role">Workspace admin</small></span
+              ><svg class="icon small">
+                <use href="/assets/icons.svg#chevron-down" />
+              </svg>
+            </button>
+            <div id="account-menu" class="account-menu popover" hidden>
+              <p id="account-email">Demo workspace</p>
+              <button id="preferences-button" type="button">
+                <svg class="icon">
+                  <use href="/assets/icons.svg#sliders-horizontal" /></svg
+                >Display preferences</button
+              ><button id="logout-button" type="button">
+                <svg class="icon"><use href="/assets/icons.svg#log-out" /></svg
+                ><span id="logout-label">Leave demo</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <button
+          id="close-mobile-nav"
+          class="icon-button close-mobile-nav"
+          type="button"
+          aria-label="Close navigation"
+        >
+          <svg class="icon"><use href="/assets/icons.svg#x" /></svg>
+        </button>
+      </aside>
+
+      <div class="workspace-body">
+        <header class="topbar">
+          <div class="breadcrumb">
+            <button
+              id="open-mobile-nav"
+              class="icon-button open-mobile-nav"
+              type="button"
+              aria-label="Open navigation"
+              aria-expanded="false"
+              aria-controls="sidebar"
+            >
+              <svg class="icon">
+                <use href="/assets/icons.svg#menu" />
+              </svg></button
+            ><svg class="icon breadcrumb-icon">
+              <use href="/assets/icons.svg#layout-dashboard" /></svg
+            ><span class="breadcrumb-workspace">Workspace</span
+            ><span class="breadcrumb-slash">/</span
+            ><span id="breadcrumb-page">Overview</span>
+          </div>
+          <div class="topbar-actions">
+            <button
+              id="command-button"
+              class="command-button"
+              type="button"
+              aria-label="Search pages and athletes"
+            >
+              <svg class="icon"><use href="/assets/icons.svg#search" /></svg
+              ><span>Search anything…</span
+              ><kbd id="command-key">⌘ K</kbd></button
+            ><span id="connection-badge" class="connection-badge"
+              ><span></span>Demo workspace</span
+            ><span class="topbar-divider"></span
+            ><button
+              id="activity-button"
+              class="icon-button notification-button"
+              type="button"
+              aria-label="View workspace activity"
+              aria-expanded="false"
+              aria-controls="activity-popover"
+            >
+              <svg class="icon"><use href="/assets/icons.svg#bell" /></svg
+              ><i id="notification-dot" hidden></i></button
+            ><button
+              id="top-help-button"
+              class="icon-button top-help-button"
+              type="button"
+              aria-label="Open help"
+            >
+              <svg class="icon">
+                <use href="/assets/icons.svg#circle-help" />
+              </svg>
+            </button>
+          </div>
+          <div
+            id="activity-popover"
+            class="activity-popover popover"
+            hidden
+          ></div>
+        </header>
+        <main
+          id="main-content"
+          class="main-content"
+          tabindex="-1"
+          aria-labelledby="page-title"
+        >
+          <div class="page-heading">
+            <div>
+              <p class="section-kicker" id="page-kicker">
+                YOUR PERFORMANCE WORKSPACE
+              </p>
+              <h1 id="page-title">
+                Team overview<span class="heading-dot">.</span>
+              </h1>
+              <p id="page-description">
+                The complete picture of your team, in one place.
+              </p>
+            </div>
+            <div class="page-actions">
+              <button
+                id="export-button"
+                class="button secondary"
+                type="button"
+                data-roles="ADMIN,HEAD_COACH"
+              >
+                <svg class="icon"><use href="/assets/icons.svg#download" /></svg
+                >Export data</button
+              ><button
+                id="import-button"
+                class="button primary"
+                type="button"
+                data-roles="ADMIN,HEAD_COACH,PRACTITIONER"
+              >
+                <svg class="icon"><use href="/assets/icons.svg#plus" /></svg
+                >Import data
+              </button>
+            </div>
+          </div>
+          <div class="filter-bar" id="filter-bar">
+            <div class="filter-controls">
+              <div class="select-wrap squad-filter">
+                <svg class="icon"><use href="/assets/icons.svg#users" /></svg
+                ><label class="sr-only" for="squad-select"
+                  >Filter by squad</label
+                ><select id="squad-select">
+                  <option value="all">All squads</option></select
+                ><svg class="icon small select-chevron">
+                  <use href="/assets/icons.svg#chevron-down" />
+                </svg>
+              </div>
+              <span class="filter-divider"></span>
+              <div class="select-wrap period-filter">
+                <svg class="icon">
+                  <use href="/assets/icons.svg#calendar-days" /></svg
+                ><label class="sr-only" for="period-select">Date range</label
+                ><select id="period-select">
+                  <option value="7">Last 7 days</option>
+                  <option value="21">Last 21 days</option>
+                  <option value="42">Last 42 days</option>
+                  <option value="90">Last 90 days</option></select
+                ><svg class="icon small select-chevron">
+                  <use href="/assets/icons.svg#chevron-down" />
+                </svg>
+              </div>
+              <span id="date-range" class="date-range"></span>
+            </div>
+            <div class="refresh-control">
+              <span id="updated-label">Updated just now</span
+              ><button
+                id="refresh-button"
+                class="icon-button"
+                type="button"
+                aria-label="Refresh workspace data"
+              >
+                <svg class="icon">
+                  <use href="/assets/icons.svg#refresh-cw" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div id="global-notice" class="notice" role="status" hidden></div>
+          <div
+            id="page-content"
+            class="page-content"
+            aria-live="polite"
+            aria-busy="true"
+          ></div>
+          <footer class="workspace-footer">
+            <span
+              ><span class="footer-wordmark">SDIP</span> A connected view of
+              performance.</span
+            ><span id="workspace-footer-note"
+              ><svg class="icon small">
+                <use href="/assets/icons.svg#shield-check" /></svg
+              >Sample data · Not connected to live athletes</span
+            >
+          </footer>
+        </main>
+      </div>
     </div>
 
-    <div id="tab-batches" class="card hidden">
-      <h2>Ingestion batches</h2>
-      <button class="ghost" onclick="loadBatches()">Refresh</button>
-      <div id="batchTbl"></div>
-    </div>
-
-    <div id="tab-quarantine" class="card hidden">
-      <h2>Link quarantine queue (ADMIN)</h2>
-      <button class="ghost" onclick="loadQuarantine()">Refresh</button>
-      <div id="qTbl"></div>
-    </div>
-  </section>
-</main>
-<script>
-let access=localStorage.getItem('sdip.at')||'', refreshTok=localStorage.getItem('sdip.rt')||'', me=null, athletesCache=[];
-const $=q=>document.querySelector(q);
-
-async function api(path,opts={},isRetry){
-  opts.headers=Object.assign({},opts.headers, access?{Authorization:'Bearer '+access}:{});
-  if(opts.json){opts.headers['Content-Type']='application/json';opts.body=JSON.stringify(opts.json)}
-  const r=await fetch(path,opts);
-  if(r.status===401&&!isRetry&&await tryRefresh()) return api(path,opts,true);
-  if(r.status===403) throw new Error('403 — your role cannot do that');
-  if(!r.ok) throw new Error(r.status+' — '+await r.text());
-  const ct=r.headers.get('content-type')||'';
-  return ct.includes('json')?r.json():r.text();
-}
-async function tryRefresh(){
-  if(!refreshTok) return false;
-  try{const r=await fetch('/api/auth/refresh',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({refreshToken:refreshTok})});
-    if(!r.ok) return false; const p=await r.json(); setTokens(p); return true;}catch(e){return false}
-}
-function setTokens(p){access=p.accessToken;refreshTok=p.refreshToken;localStorage.setItem('sdip.at',access);localStorage.setItem('sdip.rt',refreshTok)}
-async function login(){
-  $('#loginErr').textContent='';
-  try{const r=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({email:$('#email').value.trim(),password:$('#password').value})});
-    if(!r.ok) throw new Error(r.status===401?'Bad credentials':('HTTP '+r.status));
-    setTokens(await r.json()); await enter();
-  }catch(e){$('#loginErr').textContent='Sign-in failed: '+e.message}
-}
-function logout(){access=refreshTok='';localStorage.removeItem('sdip.at');localStorage.removeItem('sdip.rt');location.reload();}
-async function enter(){
-  me=await api('/api/auth/me');
-  $('#who').textContent=me.email+' · '+me.role; $('#logoutBtn').classList.remove('hidden');
-  $('#login').classList.add('hidden'); $('#app').classList.remove('hidden');
-  document.querySelectorAll('#tabs [data-roles]').forEach(b=>{if(!b.dataset.roles.split(',').includes(me.role)) b.classList.add('hidden')});
-  const p=await api('/api/athletes?size=200'); athletesCache=p.content||[];
-  for(const id of ['#athleteSel','#athleteSel2']) $(id).innerHTML=athletesCache.map(a=>`<option value="${a.id}">${a.fullName}</option>`).join('');
-  try{const pr=await api('/api/ingest/mapping-profiles'); $('#profileSel').innerHTML=pr.map(x=>`<option>${x.name}</option>`).join('')}catch(e){}
-  loadTeam();
-}
-function showTab(name){
-  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===name));
-  for(const el of document.querySelectorAll('[id^="tab-"]')) el.classList.add('hidden');
-  $('#tab-'+name).classList.remove('hidden');
-  ({team:loadTeam,athlete:loadAthlete,fatigue:loadFatigue,batches:loadBatches,quarantine:loadQuarantine})[name]();
-}
-const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function tbl(rows,cols){if(!rows.length)return'<p class="mut">No data yet — upload a file or run a connector sync.</p>';
-  return'<table><tr>'+cols.map(c=>`<th>${c[0]}</th>`).join('')+'</tr>'+rows.map(r=>'<tr>'+cols.map(c=>`<td>${c[2]?c[1](r):esc(c[1](r))}</td>`).join('')+'</tr>').join('')+'</table>'}
-const fmt=(n,d=0)=>(n==null?'—':Number(n).toLocaleString(undefined,{maximumFractionDigits:d}));
-
-function bars(el,rows,label,value,color){
-  const w=720,h=260,pad=34,max=Math.max(1,...rows.map(value));const bw=Math.max(6,(w-pad*2)/Math.max(1,rows.length)-6);
-  let s=`<svg viewBox="0 0 ${w} ${h}">`;
-  for(let i=0;i<5;i++){const y=pad+(h-pad*2)*i/4;s+=`<line x1="${pad}" y1="${y}" x2="${w-pad}" y2="${y}" stroke="#2c3a56"/><text x="4" y="${y+4}" fill="#8fa0bd" font-size="10">${fmt(max*(4-i)/4)}</text>`}
-  rows.forEach((r,i)=>{const x=pad+i*((w-pad*2)/rows.length);const bh=(h-pad*2)*value(r)/max;
-    s+=`<rect x="${x+3}" y="${h-pad-bh}" width="${bw}" height="${bh}" rx="3" fill="${color}"><title>${esc(label(r))}: ${fmt(value(r))}</title></rect>`;
-    if(rows.length<=16)s+=`<text x="${x+bw/2+3}" y="${h-pad+13}" fill="#8fa0bd" font-size="10" text-anchor="middle" transform="rotate(0)">${esc(String(label(r)).slice(0,10))}</text>`});
-  s+='</svg>';el.innerHTML=s;
-}
-function lines(el,series){ // series: [{name,color,points:[[label,v],...]}]
-  const w=720,h=280,pad=40;const labels=[...new Set(series.flatMap(s=>s.points.map(p=>p[0])))].sort();
-  const max=Math.max(1,...series.flatMap(s=>s.points.map(p=>p[1])));
-  const X=i=>pad+(w-pad*2)*(labels.length<2?0.5:i/(labels.length-1)),Y=v=>h-pad-(h-pad*2)*v/max;
-  let s=`<svg viewBox="0 0 ${w} ${h}">`;
-  for(let i=0;i<5;i++){const y=pad+(h-pad*2)*i/4;s+=`<line x1="${pad}" y1="${y}" x2="${w-pad}" y2="${y}" stroke="#2c3a56"/><text x="4" y="${y+4}" fill="#8fa0bd" font-size="10">${fmt(max*(4-i)/4)}</text>`}
-  if(labels.length<=20)labels.forEach((l,i)=>{if(i%2===0)s+=`<text x="${X(i)}" y="${h-pad+14}" fill="#8fa0bd" font-size="9" text-anchor="middle">${esc(l.slice(5))}</text>`});
-  series.forEach(sr=>{let d='',started=false;
-    sr.points.forEach(p=>{const i=labels.indexOf(p[0]);if(i<0)return;d+=(started?'L':'M')+X(i)+' '+Y(p[1])+' ';started=true});
-    s+=`<path d="${d}" fill="none" stroke="${sr.color}" stroke-width="2"/>`;
-    sr.points.forEach(p=>{const i=labels.indexOf(p[0]);if(i>=0)s+=`<circle cx="${X(i)}" cy="${Y(p[1])}" r="3" fill="${sr.color}"><title>${esc(p[0])} ${sr.name}: ${fmt(p[1],2)}</title></circle>`})});
-  s+=series.map((sr,i)=>`<rect x="${pad+i*150}" y="6" width="10" height="10" fill="${sr.color}" rx="2"/><text x="${pad+14+i*150}" y="15" fill="#8fa0bd" font-size="11">${sr.name}</text>`).join('');
-  el.innerHTML=s+'</svg>';
-}
-
-async function loadTeam(){
-  try{const d=$('#daysTeam').value;const rows=await api('/api/dashboard/team/load?days='+d);
-    bars($('#teamChart'),rows,r=>r.fullName,r=>r.playerLoad,'#4da3ff');
-    $('#teamTbl').innerHTML=tbl(rows,[['Athlete',r=>r.fullName],['Player load',r=>fmt(r.playerLoad)],['Distance (m)',r=>fmt(r.totalDistanceM)],['HSR (m)',r=>fmt(r.hsrM)],['Sessions',r=>fmt(r.sessions)]]);
-  }catch(e){$('#teamTbl').innerHTML='<p class="err">'+esc(e.message)+'</p>'}
-}
-async function loadAthlete(){
-  const id=$('#athleteSel').value;if(!id){$('#athTbl').innerHTML='<p class="mut">No athletes in scope yet.</p>';return}
-  try{const d=await api(`/api/dashboard/athlete/${id}/load?days=42`);const days=d.days||[];
-    lines($('#athChart'),[{name:'player load',color:'#4da3ff',points:days.map(x=>[x.day,x.playerLoad])},
-      {name:'distance ÷20',color:'#3ddc97',points:days.map(x=>[x.day,x.totalDistanceM/20])},
-      {name:'ACWR ×150',color:'#ffb648',points:days.filter(x=>x.acwr!=null).map(x=>[x.day,x.acwr*150])}]);
-    $('#athTbl').innerHTML=tbl(days,[['Day',r=>r.day],['Load',r=>fmt(r.playerLoad)],['Distance',r=>fmt(r.totalDistanceM)],['HSR',r=>fmt(r.hsrM)],['MaxVel',r=>fmt(r.maxVelocityKmh,1)],['ACWR',r=>r.acwr==null?'—':`<span class="pill ${r.acwr>1.5?'p-bad':r.acwr>1.3?'p-warn':'p-ok'}">${fmt(r.acwr,2)}</span>`,true]]);
-  }catch(e){$('#athTbl').innerHTML='<p class="err">'+esc(e.message)+'</p>'}
-}
-async function loadFatigue(){
-  const id=$('#athleteSel2').value;if(!id){$('#fatTbl').innerHTML='<p class="mut">No athletes in scope yet.</p>';return}
-  try{const d=await api(`/api/dashboard/athlete/${id}/fatigue-overlay?days=90`);const ft=d.forceTests||[],days=d.days||[];
-    lines($('#fatChart'),[{name:'player load',color:'#4da3ff',points:days.map(x=>[x.day,x.playerLoad])},
-      {name:'RSI-mod ×800',color:'#ff6b6b',points:ft.map(x=>[x.day,x.rsiModified*800])},
-      {name:'peak force ÷8',color:'#3ddc97',points:ft.map(x=>[x.day,(x.peakForceN||0)/8])}]);
-    $('#fatTbl').innerHTML=tbl(ft,[['Day',r=>r.day],['Test',r=>r.testType],['RSI-mod',r=>fmt(r.rsiModified,3)],['Asym %',r=>fmt(r.asymmetryPct,1)],['Peak force N',r=>fmt(r.peakForceN)]]);
-  }catch(e){$('#fatTbl').innerHTML='<p class="err">'+esc(e.message)+'</p>'}
-}
-async function upload(){
-  const f=$('#fileInput').files[0];$('#uploadMsg').className='mut';
-  if(!f){$('#uploadMsg').textContent='Pick a file first.';return}
-  const fd=new FormData();fd.append('file',f);fd.append('profile',$('#profileSel').value);
-  try{const r=await api('/api/ingest/files',{method:'POST',body:fd});
-    $('#uploadMsg').innerHTML=`Batch <b>${r.batchId}</b> accepted (${r.status}). See the Batches tab.`;
-  }catch(e){$('#uploadMsg').className='err';$('#uploadMsg').textContent='Upload failed: '+e.message}
-}
-async function loadBatches(){
-  try{const p=await api('/api/ingest/batches?size=30&sort=startedAt,desc');const rows=p.content||[];
-    $('#batchTbl').innerHTML=tbl(rows,[['Started',r=>(r.startedAt||'').replace('T',' ').slice(0,19)],['Type',r=>r.batchType],['Source',r=>r.sourceSystem],['Actor',r=>r.triggeredBy],
-      ['Status',r=>`<span class="pill ${r.status==='COMPLETED'?'p-ok':r.status==='FAILED'?'p-bad':'p-warn'}">${r.status}</span>`,true],
-      ['Read',r=>r.rowsRead],['Written',r=>r.rowsWritten],['Skipped',r=>r.rowsSkipped]]);
-  }catch(e){$('#batchTbl').innerHTML='<p class="err">'+esc(e.message)+'</p>'}
-}
-async function loadQuarantine(){
-  try{const p=await api('/api/links/quarantine?size=50');const rows=p.content||[];
-    if(!rows.length){$('#qTbl').innerHTML='<p class="mut">Queue empty — nothing awaiting human review.</p>';return}
-    const pay=q=>{try{return JSON.parse(q.payload||'{}')}catch(e){return{}}};
-    $('#qTbl').innerHTML='<table><tr><th>Incoming identity</th><th>Best candidate</th><th>Score</th><th>Source</th><th></th></tr>'+rows.map(q=>{const p=pay(q);
-      return `<tr><td>${esc(p.fullName||q.sourceAthleteId)} ${esc(p.dob||'')}<br><span class="mut">${esc(p.email||'')}</span></td>
-      <td>${esc(p.candidateName||'—')} ${esc(p.candidateDob||'')}</td><td>${fmt(q.score,3)}</td><td>${esc(q.sourceSystem)}</td>
-      <td><button class="ghost" onclick="qAct('${q.id}','confirm')">Confirm</button>
-      <button class="ghost" onclick="qAct('${q.id}','reject')">Reject</button></td></tr>`}).join('')+'</table>';
-  }catch(e){$('#qTbl').innerHTML='<p class="err">'+esc(e.message)+'</p>'}
-}
-async function qAct(id,act){try{await api(`/api/links/quarantine/${id}/${act}`,{method:'POST'});loadQuarantine()}catch(e){alert(e.message)}}
-
-if(access){enter().catch(()=>{logout()})}
-</script>
-</body>
+    <dialog id="app-dialog" class="app-dialog" aria-labelledby="dialog-title">
+      <div id="dialog-content"></div>
+    </dialog>
+    <div
+      id="toast-region"
+      class="toast-region"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
+    <noscript
+      ><div class="noscript-note">
+        SDIP needs JavaScript to load your performance workspace. Please enable
+        JavaScript and refresh this page.
+      </div></noscript
+    >
+  </body>
 </html>

@@ -125,3 +125,9 @@ docs/superpowers/
 docs/plans/
 docs/sessions/
 *.handoff.md
+
+# Frontend preview dependencies and local browser reports
+node_modules/
+playwright-report/
+test-results/
+.taste-skill/

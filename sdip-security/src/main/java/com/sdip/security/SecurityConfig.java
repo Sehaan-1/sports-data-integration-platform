@@ -44,7 +44,7 @@ public class SecurityConfig {
                                 "/api/auth/**",
                                 "/actuator/health", "/actuator/health/**",
                                 "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**",
-                                "/", "/index.html", "/dashboard.html", "/favicon.ico", "/error")
+                                "/", "/index.html", "/dashboard.html", "/assets/**", "/favicon.ico", "/error")
                         .permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(eh -> eh
