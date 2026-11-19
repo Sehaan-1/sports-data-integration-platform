@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "outputDirectory": "sdip-api/src/main/resources/static",
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/assets/(.*)", "destination": "/assets/$1" },
+    { "source": "/(.*)", "destination": "/$1" }
+  ]
+}

@@ -7,17 +7,19 @@
       name="description"
       content="SDIP — Sports Data Integration Platform"
     />
-    <meta http-equiv="refresh" content="0; url=/dashboard.html" />
+    <meta http-equiv="refresh" content="0; url=dashboard.html" />
     <title>SDIP — Performance workspace</title>
-    <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg" />
-    <link rel="stylesheet" href="/assets/styles.css" />
+    <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
+    <link rel="stylesheet" href="./assets/styles.css" />
     <script>
-      location.replace("/dashboard.html" + location.search + location.hash);
+      const hasSession = localStorage.getItem("sdip.at");
+      const target = hasSession ? "dashboard.html" : "dashboard.html?demo=1";
+      location.replace(target + (location.search || "") + (location.hash || ""));
     </script>
   </head>
   <body>
     <main class="boot-screen">
-      Opening your <a href="/dashboard.html">SDIP workspace</a>…
+      Opening your <a href="dashboard.html">SDIP workspace</a>…
     </main>
   </body>
 </html>

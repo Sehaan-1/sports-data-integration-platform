@@ -1,0 +1,42 @@
+services:
+  - type: web
+    name: sdip-api
+    runtime: docker
+    dockerfilePath: Dockerfile
+    plan: free
+    region: oregon
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: pg
+      - key: PGHOST
+        fromDatabase:
+          name: sdip-postgres
+          property: host
+      - key: PGPORT
+        fromDatabase:
+          name: sdip-postgres
+          property: port
+      - key: PGDATABASE
+        fromDatabase:
+          name: sdip-postgres
+          property: database
+      - key: PGUSER
+        fromDatabase:
+          name: sdip-postgres
+          property: user
+      - key: PGPASSWORD
+        fromDatabase:
+          name: sdip-postgres
+          property: password
+      - key: SDIP_SEED_DEFAULT_USERS
+        value: "true"
+      - key: SDIP_SEED_DEMO_DATA
+        value: "true"
+
+databases:
+  - name: sdip-postgres
+    databaseName: sdip
+    user: sdip
+    plan: free
+    region: oregon

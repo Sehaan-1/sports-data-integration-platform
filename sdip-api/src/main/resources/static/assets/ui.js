@@ -11,7 +11,7 @@ export const esc = (value) =>
       ],
   );
 export const icon = (name, extra = "") =>
-  `<svg class="icon ${esc(extra)}" aria-hidden="true"><use href="/assets/icons.svg#${esc(name)}"/></svg>`;
+  `<svg class="icon ${esc(extra)}" aria-hidden="true"><use href="./assets/icons.svg#${esc(name)}"/></svg>`;
 export const formatNumber = (value, decimals = 0) =>
   value == null || !Number.isFinite(Number(value))
     ? "—"
@@ -108,3 +108,4 @@ export function debounce(callback, delay = 120) {
   wrapped.cancel = () => clearTimeout(timer);
   return wrapped;
 }
+

@@ -29,7 +29,7 @@ export function createApiClient({
   let access = read("sdip.at");
   let refreshToken = read("sdip.rt");
   let refreshing = null;
-  let expired = false;
+  let expired = false; const apiBase = (read("sdip.api") || (new URLSearchParams(location.search).get("api") || "")).replace(/\/+$/, "");
   const remember = (key, value) => {
     try {
       value ? storage?.setItem(key, value) : storage?.removeItem(key);
@@ -58,7 +58,7 @@ export function createApiClient({
     if (!refreshing)
       refreshing = (async () => {
         try {
-          const response = await fetchImpl("/api/auth/refresh", {
+          const response = await fetchImpl((apiBase || "") + "/api/auth/refresh", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ refreshToken }),
@@ -88,7 +88,7 @@ export function createApiClient({
     let response;
     try {
       const timeout = AbortSignal.timeout(30_000);
-      response = await fetchImpl(path, {
+      const url = path.startsWith("http") ? path : `${apiBase}${path}`; response = await fetchImpl(url, {
         method: options.method || "GET",
         headers,
         body,
@@ -185,3 +185,5 @@ export function createApiClient({
     },
   };
 }
+
+

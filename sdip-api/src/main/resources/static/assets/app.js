@@ -1707,7 +1707,7 @@ $("#toggle-password").addEventListener("click", () => {
   $("#toggle-password").innerHTML = icon(show ? "eye-off" : "eye");
 });
 $("#explore-demo").addEventListener("click", () => {
-  location.href = "/dashboard.html?demo=1";
+  location.href = "dashboard.html?demo=1";
 });
 $("#import-button").addEventListener("click", showImport);
 $("#export-button").addEventListener("click", showExport);
@@ -1731,11 +1731,11 @@ $("#account-button").addEventListener("click", () => {
 });
 $("#logout-button").addEventListener("click", () => {
   if (state.demo) {
-    location.href = "/dashboard.html?signin=1";
+    location.href = "dashboard.html?signin=1";
     return;
   }
   state.client.clearTokens();
-  history.replaceState(null, "", "/dashboard.html");
+  history.replaceState(null, "", "dashboard.html");
   showLogin();
   $("#login-email").focus();
 });
@@ -1766,3 +1766,4 @@ setInterval(() => {
 boot().catch((error) =>
   showLogin(`The workspace could not open. ${error.message}`),
 );
+
